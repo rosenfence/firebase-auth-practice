@@ -1,58 +1,100 @@
-import { Login, Signup, Logout, auth } from './firebase/Index';
-import { useState } from 'react';
-import { onAuthStateChanged } from 'firebase/auth';
+import { auth, Signup } from './firebase/Index';
+import React, { useState } from 'react';
+import { signOut, signInWithEmailAndPassword, GoogleAuthProvider, signInWithPopup } from 'firebase/auth';
 
 const App = () => {
-  const [registerEmail, setRegisterEmail] = useState('');
-  const [registerPassword, setRegisterPassword] = useState('');
+  const [signupEmail, setSignupEmail] = useState('');
+  const [signupPassword, setSignupPassword] = useState('');
 
   const [loginEmail, setLoginEmail] = useState('');
   const [loginPassword, setLoginPassword] = useState('');
 
-  const [user, setUser] = useState({});
+  const [loginUserData, setLoginUserData] = useState('');
 
-  onAuthStateChanged(auth, (currentUser) => {
-    setUser(currentUser);
-  });
+  const [userData, setUserData] = useState(null);
+
+  const Login = async (email, password) => {
+    await signInWithEmailAndPassword(auth, email, password)
+      .then((data) => {
+        setLoginUserData(data.user.email);
+        console.log(loginUserData);
+        console.log('logged in');
+      })
+      .catch((error) => {
+        console.log(error.message);
+      });
+  };
+
+  const Logout = async () => {
+    await signOut(auth).then(() => {
+      setLoginUserData('');
+      console.log(auth);
+      console.log('logged out');
+    });
+  };
+
+  const GoogleLogin = async () => {
+    const provider = new GoogleAuthProvider(); // provider를 구글로 설정
+    await signInWithPopup(auth, provider) // popup을 이용한 signup
+      .then((data) => {
+        setUserData(data.user); // user data 설정
+        // console.log(data); // console로 들어온 데이터 표시
+        console.log(auth);
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   return (
     <div>
-      <div className='Signup'>
-        <h1>Signup</h1>
-        <input
-          placeholder='Email'
-          onChange={(e) => {
-            setRegisterEmail(e.target.value);
+      <div className='signup'>
+        <h1>Sign Up</h1>
+        <input placeholder='Email' onChange={(e) => setSignupEmail(e.target.value)} />
+        <input placeholder='Password' type='password' onChange={(e) => setSignupPassword(e.target.value)} />
+        <button
+          onClick={() => {
+            Signup(signupEmail, signupPassword);
           }}
-        />
-        <input
-          placeholder='Password'
-          onChange={(e) => {
-            setRegisterPassword(e.target.value);
-          }}
-        />
-        <button onClick={() => Signup(registerEmail, registerPassword)}>Sign Up</button>
+        >
+          Sign Up
+        </button>
       </div>
-      <br />
-      <div className='Login'>
+      <div className='login'>
         <h1>Login</h1>
-        <input
-          placeholder='Email'
-          onChange={(e) => {
-            setLoginEmail(e.target.value);
+        <input placeholder='Email' onChange={(e) => setLoginEmail(e.target.value)} />
+        <input placeholder='Password' type='password' onChange={(e) => setLoginPassword(e.target.value)} />
+        <button
+          onClick={() => {
+            Login(loginEmail, loginPassword);
           }}
-        />
-        <input
-          placeholder='Password'
-          onChange={(e) => {
-            setLoginPassword(e.target.value);
+        >
+          Login
+        </button>
+      </div>
+      <div className='logout'>
+        <h1>User Info</h1>
+        <div>
+          {loginUserData ? `${loginUserData}` : null}
+          {userData ? userData.displayName : null}
+        </div>
+        <button
+          onClick={() => {
+            Logout();
           }}
-        />
-        <button onClick={() => Login(loginEmail, loginPassword)}>Log in</button>
-        <br />
-        <h1>Now Log in User</h1>
-        <div>{user?.email}</div>
-        <button onClick={() => Logout()}>Log out</button>
+        >
+          Logout
+        </button>
+      </div>
+      <div className='google-login'>
+        <h1>Google AOuth</h1>
+        <button
+          onClick={() => {
+            GoogleLogin();
+          }}
+        >
+          Google Login
+        </button>
       </div>
     </div>
   );

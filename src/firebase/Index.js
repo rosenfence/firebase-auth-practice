@@ -1,6 +1,4 @@
-import Login from './Login';
-import Signup from './Signup';
-import Logout from './Logout';
 import auth from './Firebase_config';
+import Signup from './Signup';
 
-export { Login, Signup, Logout, auth };
+export { auth, Signup };

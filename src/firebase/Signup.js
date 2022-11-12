@@ -3,9 +3,10 @@ import auth from './Firebase_config';
 
 const Signup = async (email, password) => {
   try {
-    await createUserWithEmailAndPassword(auth, email, password).then((event) => {});
+    const user = await createUserWithEmailAndPassword(auth, email, password);
+    console.log(user);
   } catch (error) {
-    return error.message.replace('Firebase: Error ', '');
+    console.log(error.message);
   }
 };
 
