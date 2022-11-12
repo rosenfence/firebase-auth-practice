@@ -33,6 +33,7 @@ const App = () => {
         />
         <button onClick={() => Signup(registerEmail, registerPassword)}>Sign Up</button>
       </div>
+      <br />
       <div className='Login'>
         <h1>Login</h1>
         <input
@@ -48,6 +49,7 @@ const App = () => {
           }}
         />
         <button onClick={() => Login(loginEmail, loginPassword)}>Log in</button>
+        <br />
         <h1>Now Log in User</h1>
         <div>{user?.email}</div>
         <button onClick={() => Logout()}>Log out</button>
